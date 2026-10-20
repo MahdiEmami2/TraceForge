@@ -1,0 +1,87 @@
+groups:
+  - name: traceforge-availability
+    rules:
+      - alert: TraceforgeServiceDown
+        expr: tf_service_up == 0
+        for: 30s
+        labels:
+          severity: critical
+        annotations:
+          summary: "TraceForge service {{ $labels.service }} is down"
+          description: >
+            The Prometheus scrape of {{ $labels.instance }} has been failing
+            for more than 30s (up == 0).  Verified in Prometheus only when
+            Prometheus is running (docs/OPERATIONS.md).
+
+      - alert: TraceforgeScrapeTargetMissing
+        expr: up{job="traceforge-apps"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Prometheus cannot scrape {{ $labels.instance }}"
+          description: >
+            A traceforge-apps scrape target has been unreachable for 1m.
+
+  - name: traceforge-latency
+    rules:
+      - alert: TraceforgeHighErrorRate
+        expr: >
+          sum by (service) (rate(tf_http_request_errors_total[1m]))
+          / sum by (service) (rate(tf_http_requests_total[1m])) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Error rate above 10% on {{ $labels.service }}"
+          description: >
+            5xx ratio over a 1m window exceeded 10% for 2 consecutive
+            minutes.  Trigger with the "error" demo scenario.
+
+      - alert: TraceforgeHighLatency
+        expr: >
+          histogram_quantile(
+            0.95,
+            sum by (service, le) (rate(tf_http_request_duration_seconds_bucket[5m]))
+          ) > 1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 latency above 1s on {{ $labels.service }}"
+          description: >
+            p95 of request duration exceeded TF_LATENCY_THRESHOLD_MS (1s)
+            for 2 minutes.  Trigger with the "slow" or "threshold" scenario.
+
+      - alert: TraceforgeLatencyThresholdBreaches
+        expr: rate(tf_latency_threshold_breaches_total[5m]) > 0.2
+        for: 1m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Slow requests detected on {{ $labels.service }} {{ $labels.route }}"
+          description: >
+            The static threshold detector reports repeated breaches of the
+            configured latency threshold (docs/TELEMETRY_DESIGN.md).
+
+      - alert: TraceforgeDownstreamFailures
+        expr: increase(tf_downstream_failures_total[5m]) > 5
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Downstream failures on {{ $labels.service }} -> {{ $labels.downstream }}"
+          description: >
+            More than 5 calls to {{ $labels.downstream }} failed in 5m
+            (connection errors, timeouts, or HTTP >= 400).
+
+      - alert: TraceforgeTelemetryExportFailing
+        expr: increase(tf_otel_export_failures_total[10m]) > 3
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "OTLP trace export failing on {{ $labels.service }}"
+          description: >
+            The service could not export spans to the Collector.  Traces are
+            being lost while the app keeps serving traffic.

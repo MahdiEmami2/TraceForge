@@ -1,0 +1,22 @@
+# TraceForge - pinned dependencies (verified installable on Python 3.12).
+# SDK 1.x pairs with instrumentation 0.xxb0 (same release train, 2026-10).
+opentelemetry-api==1.39.1
+opentelemetry-sdk==1.39.1
+opentelemetry-instrumentation-fastapi==0.60b1
+opentelemetry-instrumentation-httpx==0.60b1
+opentelemetry-exporter-otlp-proto-http==1.39.1
+opentelemetry-exporter-otlp-proto-grpc==1.39.1
+opentelemetry-proto==1.39.1
+fastapi==0.141.1
+uvicorn[standard]==0.54.0
+httpx==0.28.1
+prometheus-client==0.26.0
+pydantic==2.14.1
+pydantic-settings==2.16.0
+PyYAML==6.0.3
+
+# dev/test
+pytest==9.1.1
+pytest-timeout==2.4.0
+ruff==0.17.1
+mypy==2.4.0

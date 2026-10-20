@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Local telemetry data & runtime artifacts
+*.log
+tempo-data/
+prometheus-data/
+grafana-data/
+tests/integration/_stub_*.log
+
+# Build artifacts
+dist/*.zip
+build/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

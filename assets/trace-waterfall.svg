@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="920" height="320" viewBox="0 0 920 320" role="img" aria-label="Illustrative distributed trace across gateway, order-service and inventory-service">
+  <defs><style>
+    .t{font:700 17px 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;fill:#0f172a}
+    .svc{font:700 13.5px 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;fill:#0f172a}
+    .tx{font:400 12px 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;fill:#475569}
+    .barlbl{font:700 12px 'Segoe UI','Helvetica Neue',Helvetica,Arial,sans-serif;fill:#ffffff}
+    .ax{stroke:#cbd5e1;stroke-width:1;stroke-dasharray:3 4}
+  </style></defs>
+  <rect width="920" height="320" rx="16" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="460" y="36" text-anchor="middle" class="t">Anatomy of a distributed trace</text>
+  <text x="460" y="56" text-anchor="middle" class="tx">One trace_id, three services, parent-child spans (illustrative, not captured data)</text>
+  <line class="ax" x1="230" y1="76" x2="230" y2="258"/><line class="ax" x1="550" y1="76" x2="550" y2="258"/><line class="ax" x1="870" y1="76" x2="870" y2="258"/>
+  <text x="24" y="107" class="svc">gateway</text><text x="24" y="124" class="tx">POST /api/checkout</text>
+<rect x="230" y="92" width="640" height="26" rx="5" fill="#f1f5f9"/>
+<rect x="230" y="92" width="640" height="26" rx="5" fill="#f97316"/>
+<text x="24" y="165" class="svc">order-service</text><text x="24" y="182" class="tx">POST /orders</text>
+<rect x="230" y="150" width="640" height="26" rx="5" fill="#f1f5f9"/>
+<rect x="281" y="150" width="538" height="26" rx="5" fill="#a855f7"/>
+<text x="24" y="223" class="svc">inventory-service</text><text x="24" y="240" class="tx">GET /inventory</text>
+<rect x="230" y="208" width="640" height="26" rx="5" fill="#f1f5f9"/>
+<rect x="345" y="208" width="422" height="26" rx="5" fill="#06b6d4"/>
+<text x="355" y="225" class="barlbl">+1.5 s (scenario: slow)</text>
+  <text x="230" y="276" text-anchor="middle" class="tx">0 ms</text>
+  <text x="870" y="276" text-anchor="middle" class="tx">total duration</text>
+  <text x="460" y="302" text-anchor="middle" class="tx">W3C traceparent is injected by httpx, so downstream services join the same trace.</text>
+</svg>

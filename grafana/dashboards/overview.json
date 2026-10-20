@@ -1,0 +1,95 @@
+{
+  "title": "TraceForge :: Service Overview",
+  "uid": "traceforge-overview",
+  "schemaVersion": 39,
+  "version": 1,
+  "editable": true,
+  "tags": ["traceforge"],
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "query",
+        "datasource": { "uid": "traceforge-prom" },
+        "query": "label_values(tf_http_requests_total, service)"
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "Request volume (rate by service & route)",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        { "expr": "sum by (service, route) (rate(tf_http_requests_total[1m]))", "legendFormat": "{{service}} {{route}}" }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Request error rate (5xx, 1m window)",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum by (service) (rate(tf_http_request_errors_total[1m])) / sum by (service) (rate(tf_http_requests_total[1m]))",
+          "legendFormat": "{{service}}"
+        }
+      ],
+      "fieldConfig": { "defaults": { "unit": "percentunit", "max": 1 }, "overrides": [] }
+    },
+    {
+      "id": 3,
+      "title": "Request latency p50 / p95 / p99",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum by (service, le) (rate(tf_http_request_duration_seconds_bucket[5m])))", "legendFormat": "p50 {{service}}" },
+        { "expr": "histogram_quantile(0.95, sum by (service, le) (rate(tf_http_request_duration_seconds_bucket[5m])))", "legendFormat": "p95 {{service}}" },
+        { "expr": "histogram_quantile(0.99, sum by (service, le) (rate(tf_http_request_duration_seconds_bucket[5m])))", "legendFormat": "p99 {{service}}" }
+      ],
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "id": 4,
+      "title": "Downstream dependency failures (by kind)",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "targets": [
+        { "expr": "sum by (service, downstream, kind) (rate(tf_downstream_failures_total[5m]))", "legendFormat": "{{service}} -> {{downstream}} {{kind}}" }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Latency threshold breaches (slow requests)",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "targets": [
+        { "expr": "sum by (service, route) (rate(tf_latency_threshold_breaches_total[5m]))", "legendFormat": "{{service}} {{route}}" }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "OTLP export failures (telemetry pipeline health)",
+      "type": "timeseries",
+      "datasource": { "uid": "traceforge-prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "targets": [
+        { "expr": "sum by (service, signal) (increase(tf_otel_export_failures_total[10m]))", "legendFormat": "{{service}} {{signal}}" }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "Trace exploration (Tempo)",
+      "type": "traces",
+      "datasource": { "uid": "traceforge-tempo" },
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 24 }
+    }
+  ]
+}

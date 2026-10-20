@@ -1,0 +1,47 @@
+[project]
+name = "traceforge"
+version = "1.0.0"
+description = "Local OpenTelemetry observability platform: traces, metrics, correlated logs across three FastAPI services"
+requires-python = ">=3.10"
+dependencies = [
+    "opentelemetry-api==1.39.1",
+    "opentelemetry-sdk==1.39.1",
+    "opentelemetry-instrumentation-fastapi==0.60b1",
+    "opentelemetry-instrumentation-httpx==0.60b1",
+    "opentelemetry-exporter-otlp-proto-http==1.39.1",
+    "fastapi==0.141.1",
+    "uvicorn[standard]==0.54.0",
+    "httpx==0.28.1",
+    "prometheus-client==0.26.0",
+    "pydantic==2.14.1",
+    "pydantic-settings==2.16.0",
+    "PyYAML==6.0.3",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "pytest-timeout==2.4.0", "ruff==0.17.1", "mypy==2.4.0"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+timeout = 120
+markers = ["integration: starts real service processes and exports real OTLP"]
+
+[tool.ruff]
+line-length = 88
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.12"
+mypy_path = "src"
+ignore_missing_imports = true
