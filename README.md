@@ -258,5 +258,3 @@ Grafana-Dashboards, sichere Konfiguration und ehrliche Trennung zwischen
 „verifiziert" und „konfiguriert, aber nicht verifiziert".
 
 <p align="right"><a href="#readme-top">↑ back to top</a></p>
-#   T r a c e F o r g e  
- # TraceForge
